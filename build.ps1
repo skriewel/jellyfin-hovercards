@@ -34,7 +34,7 @@ $meta = [ordered]@{
     timestamp   = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
     version     = $Version
     status      = "Active"
-    autoUpdate  = $false
+    autoUpdate  = $true
     imagePath   = "logo.png"
     assemblies  = @("Jellyfin.Plugin.HoverCards.dll")
 }
