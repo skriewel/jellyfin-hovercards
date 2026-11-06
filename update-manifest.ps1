@@ -44,6 +44,7 @@ $package = [ordered]@{
     overview    = $meta.overview
     owner       = "skriewel"
     category    = $meta.category
+    imageUrl    = "https://raw.githubusercontent.com/skriewel/jellyfin-hovercards/main/images/logo.png"
     versions    = $sorted
 }
 $json = ConvertTo-Json -InputObject @($package) -Depth 10

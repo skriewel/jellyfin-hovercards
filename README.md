@@ -1,5 +1,7 @@
 # Hover Cards – Jellyfin-Plugin (Jellyfin 12.x)
 
+![HoverCards](images/logo.png)
+
 Hover-Vorschau im Stil großer Streamingdienste: Bleibt die Maus kurz auf einer Film- oder Serienkachel
 des Startbildschirms, wächst die Kachel zu einer größeren, schwebenden Karte. Sie zeigt:
 
@@ -25,12 +27,12 @@ Voraussetzung: Das GitHub-Repo ist öffentlich, sonst kann Jellyfin Manifest und
 
 ### Manuell
 
-1. `build.ps1` ausführen (oder das fertige `dist\HoverCards_1.0.4.0.zip` nehmen).
-2. Den Ordner `dist\HoverCards_1.0.4.0` (mit `Jellyfin.Plugin.HoverCards.dll` und `meta.json`) in das
+1. `build.ps1` ausführen (oder das fertige `dist\HoverCards_1.0.4.1.zip` nehmen).
+2. Den Ordner `dist\HoverCards_1.0.4.1` (mit `Jellyfin.Plugin.HoverCards.dll` und `meta.json`) in das
    Plugin-Verzeichnis des Servers kopieren:
-   - Docker: `/config/plugins/HoverCards_1.0.4.0/`
-   - Linux (Paket): `/var/lib/jellyfin/plugins/HoverCards_1.0.4.0/`
-   - Windows: `%ProgramData%\Jellyfin\Server\plugins\HoverCards_1.0.4.0\`
+   - Docker: `/config/plugins/HoverCards_1.0.4.1/`
+   - Linux (Paket): `/var/lib/jellyfin/plugins/HoverCards_1.0.4.1/`
+   - Windows: `%ProgramData%\Jellyfin\Server\plugins\HoverCards_1.0.4.1\`
 3. Jellyfin neu starten und im Browser einmal hart neu laden (Strg+F5).
 4. Einstellungen: *Dashboard → Plugins → Hover Cards*.
 

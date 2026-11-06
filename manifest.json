@@ -6,7 +6,16 @@
         "overview":  "Streaming-style hover previews for media cards",
         "owner":  "skriewel",
         "category":  "General",
+        "imageUrl":  "https://raw.githubusercontent.com/skriewel/jellyfin-hovercards/main/images/logo.png",
         "versions":  [
+                         {
+                             "version":  "1.0.4.1",
+                             "changelog":  "Plugin image for the dashboard and the plugin catalog",
+                             "targetAbi":  "12.0.0.0",
+                             "sourceUrl":  "https://github.com/skriewel/jellyfin-hovercards/releases/download/v1.0.4.1/HoverCards_1.0.4.1.zip",
+                             "checksum":  "184ac2e4e7d6c404fac377b0cfae2f88",
+                             "timestamp":  "2026-11-06T18:24:47Z"
+                         },
                          {
                              "version":  "1.0.4.0",
                              "changelog":  "Optional: poster widens in place inside its row (Prime-style)",

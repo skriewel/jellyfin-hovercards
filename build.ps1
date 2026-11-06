@@ -1,6 +1,6 @@
 # Builds the plugin and packs a ready-to-install folder + zip into .\dist
 param(
-    [string]$Version = "1.0.4.0"
+    [string]$Version = "1.0.4.1"
 )
 $ErrorActionPreference = "Stop"
 $root = $PSScriptRoot
@@ -20,9 +20,11 @@ New-Item -ItemType Directory -Force $folder | Out-Null
 
 Copy-Item (Join-Path $root "Jellyfin.Plugin.HoverCards\bin\Release\net10.0\Jellyfin.Plugin.HoverCards.dll") $folder
 
+Copy-Item (Join-Path $root "images\logo.png") $folder
+
 $meta = [ordered]@{
     category    = "General"
-    changelog   = "Optional: poster widens in place inside its row (Prime-style)"
+    changelog   = "Plugin image for the dashboard and the plugin catalog"
     description = "Expanding hover previews for movie and series cards on the home screen, with backdrop, details and quick actions."
     guid        = "7c3e2a51-9b6d-4f1e-8a2c-5d4b1e0f6a93"
     name        = "Hover Cards"
@@ -33,6 +35,7 @@ $meta = [ordered]@{
     version     = $Version
     status      = "Active"
     autoUpdate  = $false
+    imagePath   = "logo.png"
     assemblies  = @("Jellyfin.Plugin.HoverCards.dll")
 }
 [IO.File]::WriteAllText((Join-Path $folder "meta.json"), ($meta | ConvertTo-Json), (New-Object Text.UTF8Encoding($false)))
