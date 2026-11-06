@@ -1,0 +1,452 @@
+/* Hover Cards – expanding hover preview for Jellyfin media cards.
+ * Everything is scoped to .hc-* classes and lives in a single fixed overlay attached to <body>,
+ * so no rule here touches the cards themselves (or the markup other plugins add to them). */
+
+:root {
+  --hc-bg: #10141b;
+  --hc-fg: #f2f4f7;
+  --hc-muted: rgba(242, 244, 247, 0.68);
+  --hc-radius: 10px;
+  --hc-shadow: 0 18px 48px rgba(0, 0, 0, 0.6), 0 4px 14px rgba(0, 0, 0, 0.45);
+  --hc-play-bg: #f2f4f7;
+  --hc-play-fg: #0b0e13;
+  --hc-icon-bg: rgba(255, 255, 255, 0.14);
+  --hc-icon-bg-hover: rgba(255, 255, 255, 0.28);
+  --hc-accent: #00a4dc;
+  --hc-duration: 260ms;
+  --hc-ease: cubic-bezier(0.2, 0.8, 0.25, 1);
+}
+
+.hc-pop {
+  position: fixed;
+  z-index: 990; /* above page content and headers' contents, below Jellyfin dialogs (1000+) */
+  box-sizing: border-box;
+  border-radius: var(--hc-radius);
+  background: var(--hc-bg);
+  color: var(--hc-fg);
+  box-shadow: none;
+  overflow: hidden;
+  contain: layout paint;
+  transition:
+    left var(--hc-duration) var(--hc-ease),
+    top var(--hc-duration) var(--hc-ease),
+    width var(--hc-duration) var(--hc-ease),
+    box-shadow var(--hc-duration) var(--hc-ease),
+    opacity 160ms ease;
+  will-change: left, top, width;
+  font-family: inherit;
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+}
+
+.hc-pop.hc-expanded {
+  box-shadow: var(--hc-shadow);
+}
+
+.hc-pop.hc-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hc-media {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  cursor: pointer;
+  background: #000;
+  transition: height var(--hc-duration) var(--hc-ease);
+}
+
+.hc-img {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.hc-img-base.hc-portrait {
+  filter: blur(14px) brightness(0.8);
+  transform: scale(1.15);
+}
+
+.hc-img-hi {
+  opacity: 0;
+  transition: opacity 280ms ease;
+}
+
+.hc-img-hi.hc-loaded {
+  opacity: 1;
+}
+
+.hc-media::after {
+  /* gentle fade into the detail panel */
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 38%;
+  background: linear-gradient(to bottom, rgba(16, 20, 27, 0), var(--hc-bg));
+  opacity: 0;
+  transition: opacity var(--hc-duration) ease;
+  pointer-events: none;
+}
+
+.hc-expanded .hc-media::after {
+  opacity: 0.85;
+}
+
+.hc-logo {
+  position: absolute;
+  z-index: 2;
+  left: 4.5%;
+  bottom: 9%;
+  max-width: 42%;
+  max-height: 34%;
+  object-fit: contain;
+  object-position: left bottom;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
+  opacity: 0;
+  transition: opacity 280ms ease 80ms;
+  pointer-events: none;
+}
+
+.hc-logo.hc-loaded {
+  opacity: 1;
+}
+
+.hc-media-progress {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.hc-media-progress > div {
+  height: 100%;
+  background: var(--hc-accent);
+}
+
+.hc-panel {
+  padding: 0 16px;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity 200ms ease,
+    transform var(--hc-duration) var(--hc-ease),
+    max-height var(--hc-duration) var(--hc-ease),
+    padding var(--hc-duration) var(--hc-ease);
+}
+
+.hc-expanded .hc-panel {
+  padding: 10px 16px 16px;
+  max-height: 420px;
+  opacity: 1;
+  transform: none;
+  transition-delay: 0ms, 40ms, 0ms, 0ms;
+}
+
+.hc-title {
+  font-size: 1.12em;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0 0 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hc-sub {
+  font-size: 0.9em;
+  color: var(--hc-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hc-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 10px;
+}
+
+.hc-pop button {
+  font: inherit;
+  border: 0;
+  margin: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hc-play {
+  flex: 1 1 auto;
+  min-width: 48%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 6px;
+  background: var(--hc-play-bg);
+  color: var(--hc-play-fg);
+  font-weight: 600;
+  font-size: 0.95em;
+  position: relative;
+  overflow: hidden;
+  transition: transform 120ms ease, filter 120ms ease;
+}
+
+.hc-play:hover,
+.hc-play:focus-visible {
+  filter: brightness(0.9);
+}
+
+.hc-play:active {
+  transform: scale(0.98);
+}
+
+.hc-play .material-icons {
+  font-size: 1.6em;
+}
+
+.hc-play-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hc-play-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--hc-accent);
+}
+
+.hc-icon {
+  flex: 0 1 auto;
+  min-width: 32px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--hc-icon-bg);
+  color: var(--hc-fg);
+  transition: background 120ms ease, transform 120ms ease;
+}
+
+.hc-icon:hover,
+.hc-icon:focus-visible {
+  background: var(--hc-icon-bg-hover);
+}
+
+.hc-icon:active {
+  transform: scale(0.94);
+}
+
+.hc-icon .material-icons {
+  font-size: 22px;
+}
+
+.hc-icon.hc-on .material-icons {
+  color: #ff4d6d;
+}
+
+.hc-icon.hc-played.hc-on .material-icons {
+  color: #52b54b;
+}
+
+.hc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  font-size: 0.85em;
+  color: var(--hc-muted);
+}
+
+.hc-meta > span {
+  white-space: nowrap;
+}
+
+.hc-badge {
+  padding: 0 5px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 3px;
+  color: var(--hc-fg);
+  font-size: 0.92em;
+  line-height: 1.5;
+}
+
+.hc-star {
+  color: #f5c518;
+}
+
+.hc-genres {
+  margin-top: 6px;
+  font-size: 0.85em;
+  color: var(--hc-fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hc-overview {
+  margin-top: 8px;
+  font-size: 0.86em;
+  line-height: 1.42;
+  color: var(--hc-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hc-skeleton {
+  display: block;
+  height: 0.8em;
+  margin-top: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
+  background-size: 200% 100%;
+  animation: hc-shimmer 1.2s linear infinite;
+}
+
+@keyframes hc-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+/* ---- In-row poster mode: the poster widens inside its row (same height), details on the backdrop.
+ * Position and size follow the card every frame from JS, so no geometry transitions here. */
+.hc-pop.hc-inline,
+.hc-pop.hc-inline.hc-expanded {
+  transition: opacity 160ms ease;
+  will-change: auto;
+  box-shadow: none;
+}
+
+.hc-inline .hc-media {
+  transition: none;
+}
+
+.hc-inline .hc-img-base.hc-portrait {
+  /* stays the sharp poster while it widens, then the backdrop fades in over it */
+  filter: none;
+  transform: none;
+}
+
+.hc-inline .hc-img-hi {
+  transition: opacity 340ms ease;
+}
+
+.hc-inline .hc-media::after {
+  display: none;
+}
+
+.hc-inline .hc-panel {
+  position: absolute;
+  z-index: 4;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: max(70%, min(100%, 340px));
+  box-sizing: border-box;
+  max-height: none;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  background: linear-gradient(to right, rgba(16, 20, 27, 0.9) 0%, rgba(16, 20, 27, 0.72) 55%, rgba(16, 20, 27, 0) 100%);
+  transform: translateX(-10px);
+}
+
+.hc-inline.hc-expanded .hc-panel {
+  padding: 14px 18px;
+  max-height: none;
+  transition-delay: 140ms, 140ms, 0ms, 0ms;
+}
+
+.hc-inline .hc-panel .hc-logo {
+  position: static;
+  display: block;
+  flex: 0 0 auto;
+  align-self: flex-start;
+  width: auto;
+  height: auto;
+  max-width: 85%;
+  max-height: 64px;
+  margin: 0 0 6px;
+}
+
+.hc-inline .hc-panel.hc-has-logo .hc-title {
+  display: none;
+}
+
+.hc-inline .hc-panel > * {
+  flex-shrink: 0;
+}
+
+.hc-inline .hc-actions {
+  margin: 8px 0;
+  gap: 6px;
+}
+
+.hc-inline .hc-play {
+  min-width: 0;
+  height: 36px;
+}
+
+.hc-inline .hc-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.hc-inline .hc-icon .material-icons {
+  font-size: 20px;
+}
+
+.hc-inline .hc-media-progress {
+  z-index: 5;
+}
+
+/* The invisible element Hover Cards temporarily places in a card to trigger
+ * jellyfin-web's own item actions (play, trailer, menu, details). */
+.hc-proxy {
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Anchored proxy: jellyfin-web positions the item menu against it (mouse position). */
+.hc-proxy.hc-anchor {
+  position: fixed !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-pop,
+  .hc-media,
+  .hc-panel,
+  .hc-img-hi,
+  .hc-logo {
+    transition-duration: 1ms !important;
+  }
+}

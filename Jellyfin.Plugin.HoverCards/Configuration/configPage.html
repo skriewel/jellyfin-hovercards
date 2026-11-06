@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Hover Cards</title>
+</head>
+<body>
+<div id="HoverCardsConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-checkbox">
+    <div data-role="content">
+        <div class="content-primary">
+            <form id="HoverCardsConfigForm">
+                <div class="verticalSection">
+                    <h2 class="sectionTitle">Hover Cards</h2>
+                    <p class="fieldDescription">Expanding hover preview for movie and series cards. Changes apply after reloading the web client (Ctrl+F5).</p>
+                </div>
+
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label class="emby-checkbox-label">
+                        <input id="Enabled" type="checkbox" is="emby-checkbox" />
+                        <span>Enable hover cards</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label class="emby-checkbox-label">
+                        <input id="HomeScreenOnly" type="checkbox" is="emby-checkbox" />
+                        <span>Home screen only</span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription">Includes rows from Home Screen Sections and KefinTweaks. Uncheck to use it on library and other pages too.</div>
+                </div>
+
+                <h3 class="sectionTitle">Behaviour</h3>
+                <div class="inputContainer">
+                    <label class="inputLabel inputLabelUnfocused" for="HoverDelayMs">Hover delay (ms)</label>
+                    <input id="HoverDelayMs" type="number" is="emby-input" min="0" max="5000" step="50" />
+                    <div class="fieldDescription">How long the pointer has to rest on a card before it expands. Default 450.</div>
+                </div>
+                <div class="inputContainer">
+                    <label class="inputLabel inputLabelUnfocused" for="ScaleFactor">Scale factor</label>
+                    <input id="ScaleFactor" type="number" is="emby-input" min="1" max="3" step="0.05" />
+                    <div class="fieldDescription">Width of the expanded card relative to the card. Default 1.5.</div>
+                </div>
+                <div class="inputContainer">
+                    <label class="inputLabel inputLabelUnfocused" for="MinWidthPx">Minimum width (px)</label>
+                    <input id="MinWidthPx" type="number" is="emby-input" min="200" max="1200" step="10" />
+                    <div class="fieldDescription">Small poster cards grow at least to this width. Default 380.</div>
+                </div>
+                <div class="checkboxContainer">
+                    <label class="emby-checkbox-label">
+                        <input id="IncludePosterCards" type="checkbox" is="emby-checkbox" />
+                        <span>Expand poster (portrait) cards, too</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label class="emby-checkbox-label">
+                        <input id="PosterInlineExpand" type="checkbox" is="emby-checkbox" />
+                        <span>Poster rows: widen the poster inside the row</span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription">Instead of a floating preview, the hovered poster grows in place to a landscape card and pushes the following posters aside. Details are shown on the backdrop.</div>
+                </div>
+                <div class="checkboxContainer">
+                    <label class="emby-checkbox-label">
+                        <input id="IncludeEpisodes" type="checkbox" is="emby-checkbox" />
+                        <span>Expand episode cards (Continue Watching, Next Up)</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label class="emby-checkbox-label">
+                        <input id="SeriesPlayNextUp" type="checkbox" is="emby-checkbox" />
+                        <span>Series: play button starts the next episode</span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription">Shows e.g. "Play S2 E5" like streaming services do.</div>
+                </div>
+
+                <h3 class="sectionTitle">Content</h3>
+                <div class="checkboxContainer">
+                    <label class="emby-checkbox-label">
+                        <input id="ShowLogo" type="checkbox" is="emby-checkbox" />
+                        <span>Show title logo on backdrops</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer">
+                    <label class="emby-checkbox-label">
+                        <input id="ShowGenres" type="checkbox" is="emby-checkbox" />
+                        <span>Show genres</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer">
+                    <label class="emby-checkbox-label">
+                        <input id="ShowOverview" type="checkbox" is="emby-checkbox" />
+                        <span>Show overview</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer">
+                    <label class="emby-checkbox-label">
+                        <input id="ShowTrailerButton" type="checkbox" is="emby-checkbox" />
+                        <span>Trailer button (when a trailer exists)</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer">
+                    <label class="emby-checkbox-label">
+                        <input id="ShowFavoriteButton" type="checkbox" is="emby-checkbox" />
+                        <span>Favorite button</span>
+                    </label>
+                </div>
+                <div class="checkboxContainer">
+                    <label class="emby-checkbox-label">
+                        <input id="ShowPlayedButton" type="checkbox" is="emby-checkbox" />
+                        <span>Played button</span>
+                    </label>
+                </div>
+
+                <h3 class="sectionTitle">Compatibility</h3>
+                <div class="inputContainer">
+                    <label class="inputLabel inputLabelUnfocused" for="ExcludeSelectors">Excluded containers (CSS selectors)</label>
+                    <input id="ExcludeSelectors" type="text" is="emby-input" />
+                    <div class="fieldDescription">Comma separated. Cards inside matching elements are ignored, e.g. <code>.section0, [data-section-type="upcoming"]</code>.</div>
+                </div>
+
+                <div>
+                    <button is="emby-button" type="submit" class="raised button-submit block emby-button">
+                        <span>Save</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        (function () {
+            var pluginId = '7c3e2a51-9b6d-4f1e-8a2c-5d4b1e0f6a93';
+            var page = document.querySelector('#HoverCardsConfigPage');
+            var bools = ['Enabled', 'HomeScreenOnly', 'IncludePosterCards', 'PosterInlineExpand', 'IncludeEpisodes', 'SeriesPlayNextUp',
+                'ShowLogo', 'ShowGenres', 'ShowOverview', 'ShowTrailerButton', 'ShowFavoriteButton', 'ShowPlayedButton'];
+            var numbers = ['HoverDelayMs', 'ScaleFactor', 'MinWidthPx'];
+
+            page.addEventListener('pageshow', function () {
+                Dashboard.showLoadingMsg();
+                ApiClient.getPluginConfiguration(pluginId).then(function (config) {
+                    bools.forEach(function (k) { page.querySelector('#' + k).checked = !!config[k]; });
+                    numbers.forEach(function (k) { page.querySelector('#' + k).value = config[k]; });
+                    page.querySelector('#ExcludeSelectors').value = config.ExcludeSelectors || '';
+                    Dashboard.hideLoadingMsg();
+                });
+            });
+
+            page.querySelector('#HoverCardsConfigForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                Dashboard.showLoadingMsg();
+                ApiClient.getPluginConfiguration(pluginId).then(function (config) {
+                    bools.forEach(function (k) { config[k] = page.querySelector('#' + k).checked; });
+                    numbers.forEach(function (k) {
+                        var v = parseFloat(page.querySelector('#' + k).value);
+                        if (!isNaN(v)) config[k] = k === 'ScaleFactor' ? v : Math.round(v);
+                    });
+                    config.ExcludeSelectors = page.querySelector('#ExcludeSelectors').value.trim();
+                    return ApiClient.updatePluginConfiguration(pluginId, config);
+                }).then(function (result) {
+                    Dashboard.processPluginConfigurationUpdateResult(result);
+                });
+                return false;
+            });
+        })();
+    </script>
+</div>
+</body>
+</html>
