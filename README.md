@@ -14,6 +14,17 @@ Ein Klick auf das Bild oder den Titel öffnet die Detailseite, ein Rechtsklick d
 
 ## Installation
 
+### Über das Plugin-Repository (mit Updates)
+
+1. *Dashboard → Plugins → Repositorys → +* und diese URL eintragen:
+   `https://raw.githubusercontent.com/skriewel/jellyfin-hovercards/main/manifest.json`
+2. Im Katalog **Hover Cards** auswählen und installieren, danach Jellyfin neu starten.
+3. Neue Versionen erscheinen dann als Update im Dashboard.
+
+Voraussetzung: Das GitHub-Repo ist öffentlich, sonst kann Jellyfin Manifest und Paket nicht laden.
+
+### Manuell
+
 1. `build.ps1` ausführen (oder das fertige `dist\HoverCards_1.0.4.0.zip` nehmen).
 2. Den Ordner `dist\HoverCards_1.0.4.0` (mit `Jellyfin.Plugin.HoverCards.dll` und `meta.json`) in das
    Plugin-Verzeichnis des Servers kopieren:
@@ -79,3 +90,12 @@ Jellyfin.Plugin.HoverCards/
   Web/hovercards.js, hovercards.css Client-Code
 build.ps1                           Build + Paket (dist/)
 ```
+
+## Neue Version veröffentlichen
+
+1. Version in der `.csproj` und als Standardwert in `build.ps1` erhöhen, Changelog in `build.ps1` anpassen.
+2. `.\build.ps1` ausführen: baut das Paket nach `dist\` und trägt die Version mit Prüfsumme in `manifest.json` ein.
+3. Commit und Push, dann das GitHub-Release anlegen (Tag `v<Version>`, das ZIP aus `dist\` anhängen):
+   `gh release create v<Version> dist\<Paket>.zip --title "<Name> <Version>"`
+
+Der Download-Link in `manifest.json` zeigt auf genau dieses Release-Asset, deshalb müssen Tag und Dateiname passen.

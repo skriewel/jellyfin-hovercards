@@ -27,7 +27,7 @@ $meta = [ordered]@{
     guid        = "7c3e2a51-9b6d-4f1e-8a2c-5d4b1e0f6a93"
     name        = "Hover Cards"
     overview    = "Streaming-style hover previews for media cards"
-    owner       = "local"
+    owner       = "skriewel"
     targetAbi   = "12.0.0.0"
     timestamp   = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
     version     = $Version
@@ -42,3 +42,5 @@ if (Test-Path $zip) { Remove-Item $zip -Force -Confirm:$false }
 Compress-Archive -Path (Join-Path $folder "*") -DestinationPath $zip
 $md5 = (Get-FileHash $zip -Algorithm MD5).Hash
 Write-Host "Done: $zip (MD5 $md5)"
+
+& (Join-Path $root "update-manifest.ps1") -Version $Version
